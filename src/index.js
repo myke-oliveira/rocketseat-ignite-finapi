@@ -1,3 +1,4 @@
+const { request } = require("express");
 const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 
@@ -24,12 +25,24 @@ app.post("/accounts", (request, response) => {
     cpf,
     name,
     id: uuidv4(),
-    statment: []
+    statement: []
   });
 
-  console.log(customers)
-
   return response.status(201).send();
+});
+
+app.get("/statements/:cpf", (request, response) => {
+  const { cpf } = request.params;
+
+  const customer = customers.find(customer => customer.cpf === cpf);
+
+  if (!customer) {
+    return response.status(404).json({
+      error: "Customer not found!"
+    });
+  }
+  
+  return response.json(customer.statement);
 });
 
 app.listen(3333);
